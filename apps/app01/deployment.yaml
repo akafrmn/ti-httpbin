@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/name: httpbin
         app.kubernetes.io/component: backend
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: httpbin
           image: kennethreitz/httpbin:latest
