@@ -1,0 +1,43 @@
+# Pre-commit hooks for Kubernetes and Helm projects
+# See https://pre-commit.com for more information
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+        args: ['--unsafe'] # Allow custom YAML tags used in Helm
+      - id: check-added-large-files
+        name: Check for large files
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.37.1
+    hooks:
+      - id: yamllint
+        name: Lint YAML files
+        args: ['-c', '.yamllint.yaml']
+
+  # YAML formatting with Prettier
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        name: Format YAML with Prettier
+        types_or: [yaml]
+        args: ['--write']
+
+  # Helm chart validation
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.30
+    hooks:
+      - id: helmlint
+        name: Validate Helm charts
