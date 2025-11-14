@@ -58,6 +58,11 @@ rules:
     forbid-explicit-octal: false
 
 ignore: |
+  # ignore cluster specific files
+  clusters/docker-desktop/flux-system/gotk-components.yaml
+  clusters/docker-desktop/flux-system/gotk-sync.yaml
+  clusters/docker-desktop/flux-system/kustomization.yaml
+
   # Ignore common directories
   .git/
   .github/
