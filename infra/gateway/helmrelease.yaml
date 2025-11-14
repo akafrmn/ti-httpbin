@@ -24,7 +24,13 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 3
-  values: {}
+  # Ensure all CRDs are created/updated during helm operations
+  crds:
+    - version: v1
+      kind: CustomResourceDefinition
+  values:
+    # Install CRDs if the chart supports it
+    installCRDs: true
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
