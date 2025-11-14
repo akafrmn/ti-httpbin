@@ -10,7 +10,7 @@ spec:
   timeout: 5m
   sourceRef:
     kind: ExternalArtifact
-    name: infrastructure
+    name: infra
   path: ./infra/gateway
   prune: true
   wait: true
