@@ -6,7 +6,7 @@ metadata:
   namespace: app01
   labels:
     app.kubernetes.io/name: httpbin
-    app.kubernetes.io/component: backend
+    app.kubernetes.io/component: application
 spec:
   type: ClusterIP
   ports:

@@ -6,9 +6,9 @@ metadata:
   namespace: app01
   labels:
     app.kubernetes.io/name: httpbin
-    app.kubernetes.io/component: backend
+    app.kubernetes.io/component: application
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: httpbin
@@ -16,7 +16,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: httpbin
-        app.kubernetes.io/component: backend
+        app.kubernetes.io/component: application
     spec:
       automountServiceAccountToken: false
       containers:
@@ -27,6 +27,18 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+
           livenessProbe:
             httpGet:
               path: /get
@@ -46,3 +58,21 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
+
+      volumes:
+        - name: tmp
+          emptyDir: {}
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: 'kubernetes.io/hostname'
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: httpbin

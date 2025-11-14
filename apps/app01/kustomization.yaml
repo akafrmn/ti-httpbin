@@ -1,4 +1,3 @@
----
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: app01
@@ -7,6 +6,9 @@ resources:
   - deployment.yaml
   - service.yaml
   - gw-route.yaml
-commonLabels:
-  app.kubernetes.io/managed-by: kustomize
-  app.kubernetes.io/part-of: ti-httpbin
+  - np.yaml
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/part-of: ti-httpbin

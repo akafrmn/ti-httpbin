@@ -9,24 +9,22 @@ metadata:
     app.kubernetes.io/instance: app01
 spec:
   hostnames:
-    - 'localhost'
+    - 'app01.localhost'
     - '127.0.0.1'
   parentRefs:
     - name: envoy-gateway
       namespace: envoy-gateway-system
       port: 80
   rules:
-    # Route /app01/* to httpbin backend with path rewriting
     - matches:
         - path:
             type: PathPrefix
-            value: /app01
+            value: /
       backendRefs:
         - name: httpbin
           port: 80
           weight: 100
       filters:
-        # Strip /app01 prefix before forwarding to backend
         - type: URLRewrite
           urlRewrite:
             path:

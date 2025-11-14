@@ -24,15 +24,9 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 3
-  # Ensure all CRDs are created/updated during helm operations
-  crds:
-    - version: v1
-      kind: CustomResourceDefinition
-  values:
-    # Install CRDs if the chart supports it
-    installCRDs: true
+  values: {}
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: envoy-gateway
