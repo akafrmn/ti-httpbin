@@ -12,6 +12,6 @@ spec:
   sourceRef:
     kind: ExternalArtifact
     name: apps
-  path: ./apps
+  path: ./app01
   prune: true
   wait: true
