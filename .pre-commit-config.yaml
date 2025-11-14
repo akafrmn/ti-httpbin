@@ -33,7 +33,7 @@ repos:
       - id: prettier
         name: Format YAML with Prettier
         types_or: [yaml]
-        args: ['--write']
+        args: ['--write', '--ignore-unknown']
 
   # Helm chart validation
   - repo: https://github.com/gruntwork-io/pre-commit
