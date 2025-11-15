@@ -14,7 +14,24 @@ spec:
       ports:
         - port: 80
           protocol: TCP
-        - port: 443
-          protocol: TCP
   policyTypes:
     - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-egress
+  namespace: app01
+spec:
+  podSelector: {} # Apply to all pods in app01
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: egw
+              app.kubernetes.io/component: system
+      ports:
+        - port: 80
+          protocol: TCP
+  policyTypes:
+    - Egress
