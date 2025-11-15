@@ -77,4 +77,4 @@ spec:
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app: httpbin
+              app.kubernetes.io/name: httpbin
