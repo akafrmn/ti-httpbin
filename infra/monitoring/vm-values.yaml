@@ -1,0 +1,127 @@
+# VictoriaMetrics Operator
+victoria-metrics-operator:
+  enabled: true
+  operator:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+    disable_prometheus_converter: false
+  crds:
+    cleanup:
+      enabled: true
+      image:
+        pullPolicy: IfNotPresent
+        repository: rancher/kubectl
+    plain: true
+  serviceMonitor:
+    enabled: true
+# VMSingle - single-node VictoriaMetrics for metrics storage
+vmsingle:
+  enabled: true
+  spec:
+    retentionPeriod: "7d"
+    extraLabels:
+      app: prometheus
+    podMetadata:
+      labels:
+        app: prometheus
+    storage:
+      resources:
+        requests:
+          storage: 10Gi
+    resources:
+      requests:
+        cpu: 10m
+        memory: 256Mi
+      limits:
+        cpu: 100m
+        memory: 2048Mi
+# VMAgent - collects metrics from targets
+vmagent:
+  enabled: true
+  spec:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+    scrapeInterval: 30s
+    externalLabels:
+      cluster: docker-desktop
+      environment: local
+# VMAlert - alerting and recording rules
+vmalert:
+  enabled: true
+  spec:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+    extraArgs:
+      notifier.blackhole: "true"
+# Grafana for visualization
+grafana:
+  enabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  adminPassword: admin
+  persistence:
+    enabled: false
+# Prometheus Node Exporter
+prometheus-node-exporter:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+# Kube State Metrics
+kube-state-metrics:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+# Default scrape configs
+defaultDashboardsEnabled: true
+defaultRules:
+  create: true
+  rules:
+    etcd: false
+    kubeScheduler: false
+# ServiceMonitor for application monitoring
+experimentalDashboardsEnabled: true
+# Alertmanager (optional)
+alertmanager:
+  enabled: false
+kubelet:
+  enabled: true
+  # spec for VMNodeScrape crd
+  # https://docs.victoriametrics.com/operator/api/#vmnodescrapespec
+  spec:
+    interval: "3s"

@@ -10,7 +10,7 @@ spec:
   hostnames:
     - 'app01.localhost'
   parentRefs:
-    - name: egw
+    - name: envoy-gateway
       namespace: gw-system
   rules:
     - matches:
