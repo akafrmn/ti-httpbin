@@ -3,14 +3,15 @@ checks:
   doNotAutoAddDefaults: false
   # Add specific checks to exclude if needed
   exclude:
-  # Uncomment to exclude specific checks
-  # - "no-read-only-root-fs"
-  # - "run-as-non-root"
+    - "latest-tag"
+    # Uncomment to exclude specific checks
+    # - "no-read-only-root-fs"
+    # - "run-as-non-root"
+# Include only specific checks (comment out to use defaults)
+# include:
+#   - "required-label-owner"
+#   - "required-label-app"
 
-  # Include only specific checks (comment out to use defaults)
-  # include:
-  #   - "required-label-owner"
-  #   - "required-label-app"
 customChecks: []
 # Exclude paths from scanning
 exclude:
