@@ -10,8 +10,6 @@ spec:
     - name: envoy-gateway
       namespace: envoy-gateway-system
       sectionName: http
-  hostnames:
-    - "*.localhost"
   rules:
     - filters:
         - type: RequestRedirect

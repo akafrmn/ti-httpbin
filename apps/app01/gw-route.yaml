@@ -9,14 +9,9 @@ metadata:
 spec:
   hostnames:
     - 'app01.localhost'
-    - '127.0.0.1'
   parentRefs:
     - name: envoy-gateway
       namespace: envoy-gateway-system
-      port: 80
-    - name: envoy-gateway
-      namespace: envoy-gateway-system
-      port: 443
   rules:
     - matches:
         - path:
