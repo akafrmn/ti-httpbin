@@ -15,3 +15,18 @@ spec:
           selector:
             matchLabels:
               app.kubernetes.io/component: application
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: '*.localhost'
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: gateway-wildcard-tls
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              app.kubernetes.io/component: application
