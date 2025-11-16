@@ -1,0 +1,286 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vmagent-egress
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vmagent
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow metrics scraping from all namespaces on port 8080
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow scraping node-exporter on port 9100
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9100
+    # Allow access to kube-apiserver
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow writing to VMSingle
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmsingle
+      ports:
+        - protocol: TCP
+          port: 8429
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vmsingle-ingress
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vmsingle
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from VMAgent
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 8429
+    # Allow from Grafana
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: grafana
+      ports:
+        - protocol: TCP
+          port: 8429
+    # Allow from VMAlert
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmalert
+      ports:
+        - protocol: TCP
+          port: 8429
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: grafana-access
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from anywhere for port-forward / future ingress
+    - ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow to VMSingle
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmsingle
+      ports:
+        - protocol: TCP
+          port: 8429
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kube-state-metrics-ingress
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from VMAgent
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow to kube-apiserver
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: node-exporter-ingress
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-node-exporter
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow from VMAgent
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 9100
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vm-operator-access
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: victoria-metrics-operator
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow webhook from kube-apiserver
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 9443
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow to kube-apiserver
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow managing VM resources in same namespace
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8429
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vmalert-access
+  namespace: vm-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vmalert
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from VMAgent for metrics
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow querying VMSingle
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmsingle
+      ports:
+        - protocol: TCP
+          port: 8429

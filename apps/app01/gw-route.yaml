@@ -12,6 +12,7 @@ spec:
   parentRefs:
     - name: envoy-gateway
       namespace: gw-system
+      sectionName: https # Only attach to HTTPS listener, let redirect handle HTTP
   rules:
     - matches:
         - path:
