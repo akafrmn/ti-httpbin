@@ -32,46 +32,8 @@ pre-commit install
 pre-commit run --all-files
 ```
 
-### Configured Hooks
-
-The following hooks are automatically run on each commit:
-
-- **Trailing Whitespace**: Removes trailing whitespace from files
-- **End of File Fixer**: Ensures all files end with a newline
-- **YAML Syntax Check**: Validates YAML syntax (with support for Helm templates)
-- **YAMLlint**: Lints YAML files for style and syntax issues
-- **Prettier**: Auto-formats YAML files for consistent styling
-- **Helm Lint**: Validates Helm charts structure and syntax
-- **Large Files Check**: Prevents accidentally committing large files
-- **Merge Conflict Check**: Detects merge conflict markers
-
-### Auto-fixing
-
-Many hooks will automatically fix issues when possible:
-- Trailing whitespace is removed
-- Missing end-of-file newlines are added
-- YAML formatting is standardized
-
-If a hook makes changes, the commit will be aborted so you can review the changes. Simply stage the changes and commit again.
-
-### Manual Usage
-
-To run hooks manually on specific files:
+### Bootrsp Process
 
 ```bash
-pre-commit run --files path/to/file.yaml
-```
-
-To update hooks to the latest versions:
-
-```bash
-pre-commit autoupdate
-```
-
-### Skipping Hooks
-
-If you need to skip hooks for a specific commit (not recommended):
-
-```bash
-git commit --no-verify
+./scripts/k3d-bootstrap.sh
 ```
