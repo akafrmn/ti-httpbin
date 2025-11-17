@@ -86,8 +86,7 @@ grafana:
       enabled: true
       searchNamespace: ALL
     datasources:
-      enabled: true
-      defaultDatasourceEnabled: false
+      enabled: false # Completely disable sidecar datasources
   # Explicitly configure VictoriaMetrics datasource as the ONLY default
   datasources:
     datasources.yaml:
