@@ -1,0 +1,47 @@
+# k3d cluster configuration for local development
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: k3d-local
+servers: 1 # 1 master node (control plane)
+agents: 3 # 3 worker nodes
+image: rancher/k3s:v1.30.6-k3s1 # Stable k3s version
+network: k3d-local
+kubeAPI:
+  host: "k3d-local.k8s.local"
+  hostIP: "0.0.0.0"
+  hostPort: "6443"
+ports:
+  - port: 80:80 # Map localhost:80 to LoadBalancer:80
+    nodeFilters:
+      - loadbalancer
+  - port: 443:443 # Map localhost:443 to LoadBalancer:443
+    nodeFilters:
+      - loadbalancer
+options:
+  k3d:
+    wait: true
+    timeout: "120s"
+    disableLoadbalancer: false
+    disableImageVolume: false
+    disableRollback: false
+    loadbalancer:
+      configOverrides:
+        - settings.workerConnections=2048
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik # Disable default ingress (using Envoy Gateway)
+        nodeFilters:
+          - server:*
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
+  runtime:
+    labels:
+      - label: ManagedBy=k3d
+        nodeFilters:
+          - all
+    ulimits:
+      - name: nofile
+        soft: 26677
+        hard: 26677

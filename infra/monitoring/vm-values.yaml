@@ -80,10 +80,10 @@ grafana:
   resources:
     requests:
       cpu: 10m
-      memory: 64Mi
+      memory: 256Mi
     limits:
       cpu: 100m
-      memory: 256Mi
+      memory: 512Mi
   adminPassword: admin
   persistence:
     enabled: false
