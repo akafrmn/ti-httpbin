@@ -137,8 +137,8 @@ update_hosts_file() {
     echo "127.0.0.1 $KUBEAPI_HOST $HOSTS_MARKER" | sudo tee -a /etc/hosts > /dev/null
 
     # Add wildcard localhost entries for apps
-    echo "0.0.0.0 app01.k8s.local $HOSTS_MARKER" | sudo tee -a /etc/hosts > /dev/null
-    echo "0.0.0.0 *.k8s.local $HOSTS_MARKER" | sudo tee -a /etc/hosts > /dev/null
+    # echo "0.0.0.0 app01.k8s.local $HOSTS_MARKER" | sudo tee -a /etc/hosts > /dev/null
+    # echo "0.0.0.0 *.k8s.local $HOSTS_MARKER" | sudo tee -a /etc/hosts > /dev/null
 
     print_success "Hosts file updated:"
     grep "$HOSTS_MARKER" /etc/hosts | sed 's/^/  /'
@@ -189,8 +189,8 @@ display_cluster_info() {
 
     echo ""
     print_info "API Server: https://$KUBEAPI_HOST:6443"
-    print_info "LoadBalancer HTTP: http://localhost:80"
-    print_info "LoadBalancer HTTPS: https://localhost:443"
+    print_info "GW HTTP: http://localhost:80"
+    print_info "GW HTTPS: https://localhost:443"
 }
 
 # Optional Flux bootstrap
@@ -226,13 +226,11 @@ main() {
     print_success "Cluster $CLUSTER_NAME is ready!"
     echo ""
     echo "Next steps:"
-    echo "  1. Deploy Flux: ./scripts/bootstrap.sh (if not using --flux flag)"
-    echo "  2. Apply NetworkPolicies: kubectl apply -k infra/networkpolicies/"
-    echo "  3. Deploy apps: kubectl apply -k apps/app01/"
+    echo "  Deploy Flux: ./scripts/bootstrap.sh (if not using --flux flag)"
     echo ""
     echo "Access apps:"
-    echo "  http://app01.k8s.local:80"
-    echo "  https://app01.k8s.local:443"
+    echo "HTTP: http://app01.localhost:80"
+    echo "HTTPS: https://app01.localhost:443"
     echo ""
     echo "To delete cluster:"
     echo "  k3d cluster delete $CLUSTER_NAME"
