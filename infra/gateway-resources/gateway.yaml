@@ -38,5 +38,9 @@ spec:
         namespaces:
           from: Selector
           selector:
-            matchLabels:
-              app.kubernetes.io/component: application
+            matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                  - application
+                  - system
