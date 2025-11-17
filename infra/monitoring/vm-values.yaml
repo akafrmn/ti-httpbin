@@ -23,6 +23,16 @@ victoria-metrics-operator:
 vmsingle:
   enabled: true
   spec:
+    httpRoute:
+      enabled: true
+      host: vm.localhost
+      path: /
+      port: 8429
+      protocol: HTTP
+      service:
+        name: victoria-metrics-single
+        port: 8429
+        namespace: vm-system
     retentionPeriod: "7d"
     extraLabels:
       app: prometheus
