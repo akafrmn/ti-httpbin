@@ -81,14 +81,14 @@ vmalert:
 # Grafana for visualization
 grafana:
   enabled: true
-  # Disable sidecar datasource provisioning to avoid conflicts
   sidecar:
     dashboards:
       enabled: true
       searchNamespace: ALL
     datasources:
-      enabled: false # Disable sidecar to prevent auto-generated datasources
-  # Explicitly configure ONLY VictoriaMetrics datasource
+      enabled: true
+      defaultDatasourceEnabled: false
+  # Explicitly configure VictoriaMetrics datasource as the ONLY default
   datasources:
     datasources.yaml:
       apiVersion: 1
@@ -101,9 +101,6 @@ grafana:
           editable: true
           jsonData:
             timeInterval: 30s
-      deleteDatasources:
-        - name: Prometheus
-          orgId: 1
   resources:
     requests:
       cpu: 10m
