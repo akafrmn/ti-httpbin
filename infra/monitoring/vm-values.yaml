@@ -87,6 +87,17 @@ grafana:
       searchNamespace: ALL
     datasources:
       enabled: true
+      defaultDatasourceEnabled: false
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: VictoriaMetrics
+          type: prometheus
+          access: proxy
+          url: http://vmsingle-victoria-metrics-k8s-stack.vm-system.svc:8428
+          isDefault: true
+          editable: false
   resources:
     requests:
       cpu: 10m
