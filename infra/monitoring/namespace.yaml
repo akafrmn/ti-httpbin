@@ -4,4 +4,4 @@ metadata:
   name: vm-system
   labels:
     app.kubernetes.io/name: victoria-metrics
-    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/component: system

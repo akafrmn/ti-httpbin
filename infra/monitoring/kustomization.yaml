@@ -4,6 +4,7 @@ namespace: vm-system
 resources:
   - namespace.yaml
   - vm-k8s-stack.yaml
+  - grafana-route.yaml
 configMapGenerator:
   - name: vm-k8s-stack-values
     files:

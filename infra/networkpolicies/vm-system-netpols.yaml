@@ -122,10 +122,25 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow from anywhere for port-forward / future ingress
-    - ports:
+    # Allow from Envoy Gateway proxy
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: egw
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: proxy
+      ports:
         - protocol: TCP
           port: 3000
+    # Allow from VMAgent for metrics scraping
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 8080
   egress:
     # Allow DNS
     - to:
