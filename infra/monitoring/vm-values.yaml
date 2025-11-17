@@ -88,6 +88,10 @@ grafana:
     datasources:
       enabled: true
       defaultDatasourceEnabled: false
+      # Prevent helm from creating default datasource provisioning
+      dashboards:
+        defaultDashboardsEnabled: false
+  # Explicitly configure VictoriaMetrics datasource
   datasources:
     datasources.yaml:
       apiVersion: 1
@@ -98,6 +102,8 @@ grafana:
           url: http://vmsingle-victoria-metrics-k8s-stack.vm-system.svc:8428
           isDefault: true
           editable: false
+          jsonData:
+            timeInterval: 30s
   resources:
     requests:
       cpu: 10m
