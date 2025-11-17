@@ -37,7 +37,7 @@ KUBEAPI_HOST="k3d-local.k8s.local"
 HOSTS_MARKER="# k3d-local-cluster"
 GITHUB_OWNER="akafrmn"
 GITHUB_REPO="ti-httpbin"
-FLUX_BRANCH="main"
+FLUX_BRANCH="addons"
 FLUX_PATH="clusters/docker-desktop"
 
 # Parse command line arguments
