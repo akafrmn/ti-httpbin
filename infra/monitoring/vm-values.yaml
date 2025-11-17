@@ -45,10 +45,10 @@ vmsingle:
           storage: 10Gi
     resources:
       requests:
-        cpu: 10m
+        cpu: 100m
         memory: 256Mi
       limits:
-        cpu: 100m
+        cpu: 200m
         memory: 2048Mi
 # VMAgent - collects metrics from targets
 vmagent:
