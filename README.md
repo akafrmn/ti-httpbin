@@ -1,6 +1,12 @@
 # ti-httpbin
 
 A Kubernetes and Helm deployment repository with automated pre-commit hooks for code quality.
+Components:
+ - k3d cluster
+ - flux
+ - victoria-metrics observability stack with auto configuration and dashboards
+ - cert-manager
+ - envoy gateway api instead of ingress
 
 ## Pre-commit Hooks Setup
 
