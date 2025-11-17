@@ -5,7 +5,7 @@ metadata:
   namespace: gw-system
 spec:
   interval: 5m
-  timeout: 10m
+  timeout: 5m
   chart:
     spec:
       chart: gateway-helm
@@ -32,5 +32,5 @@ metadata:
   namespace: gw-system
 spec:
   type: oci
-  interval: 1h
+  interval: 30m
   url: oci://docker.io/envoyproxy

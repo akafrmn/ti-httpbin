@@ -4,8 +4,8 @@ metadata:
   name: cert-manager
   namespace: cert-manager
 spec:
-  interval: 10m
-  timeout: 10m
+  interval: 5m
+  timeout: 5m
   chart:
     spec:
       chart: cert-manager
@@ -34,5 +34,5 @@ metadata:
   name: jetstack
   namespace: cert-manager
 spec:
-  interval: 1h
+  interval: 30m
   url: https://charts.jetstack.io
