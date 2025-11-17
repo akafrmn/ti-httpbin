@@ -10619,7 +10619,7 @@ spec:
         fsGroup: 1337
       serviceAccountName: source-watcher
       terminationGracePeriodSeconds: 10
-      volumes:    
+      volumes:
       - emptyDir: {}
         name: data
       - emptyDir: {}
