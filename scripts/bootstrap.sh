@@ -7,6 +7,4 @@
 flux bootstrap github --owner=akafrmn \
   --repository=ti-httpbin --private=false \
   --personal=true --components-extra source-watcher \
-  --branch=develop --path=clusters/docker-desktop
-
-git pull origin develop
+  --branch=main --path=clusters/docker-desktop
