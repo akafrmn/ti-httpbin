@@ -5,7 +5,7 @@ metadata:
   namespace: vm-system
 spec:
   type: default
-  interval: 1h
+  interval: 30m
   url: https://victoriametrics.github.io/helm-charts/
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -14,7 +14,7 @@ metadata:
   name: victoria-metrics-k8s-stack
   namespace: vm-system
 spec:
-  interval: 10m
+  interval: 5m
   timeout: 10m
   chart:
     spec:

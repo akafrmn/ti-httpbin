@@ -292,6 +292,58 @@ wait_for_flux_ready() {
     print_success "Flux reconciliation complete"
 }
 
+# Wait for applications to be deployed and accessible
+wait_for_applications() {
+    print_header "Waiting for Applications to be Deployed"
+
+    print_info "Initial stabilization (30s)..."
+    sleep 30
+
+    # Wait for critical path infrastructure only
+    print_info "Waiting for cert-manager (critical path)..."
+    kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=cert-manager -n cert-manager --timeout=120s 2>/dev/null || print_warning "cert-manager not ready yet"
+
+    print_info "Waiting for Envoy Gateway (critical path)..."
+    kubectl wait --for=condition=Ready pods -l control-plane=envoy-gateway -n envoy-gateway-system --timeout=120s 2>/dev/null || print_warning "Envoy Gateway not ready yet"
+
+    # Wait for applications
+    print_info "Waiting for app01..."
+    kubectl wait --for=condition=Ready pods -l app=app01 -n app01 --timeout=120s 2>/dev/null || print_warning "app01 not ready yet"
+
+    print_success "Core applications deployed"
+
+    # Monitoring deploys in background (non-blocking)
+    print_info "Victoria Metrics stack deploying in background (non-blocking)..."
+
+    # Check HTTP accessibility with reduced attempts
+    print_info "Checking application accessibility..."
+
+    local max_attempts=20
+    local attempt=0
+    local app_accessible=false
+
+    while [ $attempt -lt $max_attempts ]; do
+        if curl -sSf -k https://app01.localhost/get > /dev/null 2>&1; then
+            app_accessible=true
+            break
+        fi
+        attempt=$((attempt + 1))
+        sleep 3
+    done
+
+    if [ "$app_accessible" = true ]; then
+        print_success "Applications are accessible via HTTPS"
+        echo ""
+        print_info "Test URLs:"
+        echo "  curl -k https://app01.localhost/get"
+        echo "  curl -k https://grafana.localhost/login"
+    else
+        print_warning "Applications may still be initializing"
+        print_info "Check status with: kubectl get pods -A"
+        print_info "Check Flux sync: flux get kustomizations"
+    fi
+}
+
 # Display cluster info
 display_cluster_info() {
     print_header "Cluster Information"
@@ -393,9 +445,11 @@ main() {
     if [ "$FLUX_MODE" == "admin" ]; then
         install_flux_admin
         wait_for_flux_ready
+        wait_for_applications
     elif [ "$FLUX_MODE" == "readonly" ]; then
         install_flux_readonly
         wait_for_flux_ready
+        wait_for_applications
     fi
 
     # Show final status

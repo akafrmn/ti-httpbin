@@ -6,9 +6,9 @@ metadata:
 spec:
   dependsOn:
     - name: infra-gateway-resources
-  interval: 1h
-  retryInterval: 2m
-  timeout: 5m
+  interval: 5m
+  retryInterval: 1m
+  timeout: 3m
   sourceRef:
     kind: ExternalArtifact
     name: apps
