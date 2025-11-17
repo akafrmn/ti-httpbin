@@ -37,3 +37,19 @@ pre-commit run --all-files
 ```bash
 ./scripts/k3d-bootstrap.sh
 ```
+
+### Check Flux sync
+```
+kubectl get kustomization -n flux-system
+```
+
+### Check all pods
+```
+kubectl get pods -A
+```
+
+### Access services
+```
+curl -k https://app01.localhost/get
+curl -k https://grafana.localhost/login
+```
