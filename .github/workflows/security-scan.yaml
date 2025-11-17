@@ -1,0 +1,82 @@
+name: Security Scan
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+jobs:
+  trivy-scan:
+    name: Trivy Security Scanner
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # For uploading results to GitHub Security tab
+      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+      - name: Run Trivy for detailed console output
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '1' # Fail the build if vulnerabilities are found
+  kubesec-scan:
+    name: Kubesec Security Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install kubesec
+        run: |
+          wget https://github.com/controlplaneio/kubesec/releases/download/v2.14.1/kubesec_linux_amd64.tar.gz
+          tar -xzf kubesec_linux_amd64.tar.gz
+          sudo mv kubesec /usr/local/bin/
+      - name: Scan Kubernetes manifests with kubesec
+        run: |
+          echo "Scanning Kubernetes manifests..."
+          find . -name "*.yaml" -o -name "*.yml" | while read file; do
+            # Skip non-Kubernetes manifests (like GitHub workflows, kustomization files)
+            if grep -q "kind:" "$file" 2>/dev/null; then
+              if ! grep -q "kustomization" "$file" 2>/dev/null; then
+                echo "Scanning $file"
+                kubesec scan "$file" || true
+              fi
+            fi
+          done
+  kube-linter:
+    name: Kube-linter Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Scan with kube-linter
+        uses: stackrox/kube-linter-action@v1
+        id: kube-linter
+        with:
+          directory: .
+          config: .kube-linter.yaml
+        continue-on-error: true
+      - name: Show kube-linter results
+        run: |
+          echo "Kube-linter scan completed"
+          echo "Check the annotations above for any issues found"

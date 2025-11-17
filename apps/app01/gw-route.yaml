@@ -1,0 +1,30 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app01
+  namespace: app01
+  labels:
+    app.kubernetes.io/name: httpbin
+    app.kubernetes.io/instance: app01
+spec:
+  hostnames:
+    - 'app01.localhost'
+  parentRefs:
+    - name: envoy-gateway
+      namespace: gw-system
+      sectionName: https # Only attach to HTTPS listener, let redirect handle HTTP
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: httpbin
+          port: 80
+          weight: 100
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /

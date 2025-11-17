@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: vm-system
+resources:
+  - namespace.yaml
+  - vm-k8s-stack.yaml
+  - grafana-route.yaml
+configMapGenerator:
+  - name: vm-k8s-stack-values
+    files:
+      - values.yaml=vm-values.yaml
+    options:
+      disableNameSuffixHash: true

@@ -1,0 +1,116 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: envoy-proxy-access
+  namespace: gw-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: proxy
+      app.kubernetes.io/name: envoy
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from anywhere (for localhost/external access via LoadBalancer)
+    # No port restrictions - allow all ports for traffic ingress
+    - {}
+    # Allow from VMAgent for metrics (more specific rule)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: victoria-metrics
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 19001
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow to application namespaces (app01, etc.)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/component: application
+      ports:
+        - protocol: TCP
+          port: 80
+    # Allow to Envoy Gateway controller for xDS updates
+    - to:
+        - podSelector:
+            matchLabels:
+              control-plane: envoy-gateway
+      ports:
+        - protocol: TCP
+          port: 18000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: envoy-gateway-controller-access
+  namespace: gw-system
+spec:
+  podSelector:
+    matchLabels:
+      control-plane: envoy-gateway
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow webhook from kube-apiserver
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 9443
+    # Allow from VMAgent for metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: victoria-metrics
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vmagent
+      ports:
+        - protocol: TCP
+          port: 19001
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow to kube-apiserver
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow to Envoy proxy pods (xDS configuration)
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: proxy
+              app.kubernetes.io/name: envoy
+      ports:
+        - protocol: TCP
+          port: 18000

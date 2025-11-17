@@ -1,0 +1,105 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: ExternalArtifact
+    name: infra
+  path: ./gateway
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-cert-manager
+  namespace: flux-system
+spec:
+  interval: 10m
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: ExternalArtifact
+    name: infra
+  path: ./cert-manager
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-networkpolicies
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infra-cert-manager
+    - name: infra-monitoring
+  interval: 10m
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: ExternalArtifact
+    name: infra
+  path: ./networkpolicies
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-cert-manager-resources
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infra-cert-manager
+    - name: infra-networkpolicies
+  interval: 10m
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: ExternalArtifact
+    name: infra
+  path: ./cert-manager-resources
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-gateway-resources
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infra
+    - name: infra-cert-manager-resources
+    - name: infra-networkpolicies
+  interval: 10m
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: ExternalArtifact
+    name: infra
+  path: ./gateway-resources
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-monitoring
+  namespace: flux-system
+spec:
+  interval: 10m
+  retryInterval: 2m
+  timeout: 10m
+  sourceRef:
+    kind: ExternalArtifact
+    name: infra
+  path: ./monitoring
+  prune: true
+  wait: true

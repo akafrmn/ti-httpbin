@@ -1,0 +1,10 @@
+# Trivy ignore file
+# Add vulnerability IDs or file paths to ignore specific findings
+#
+# Examples:
+# CVE-2021-12345
+# /path/to/file/to/ignore
+#
+# For more info: https://aquasecurity.github.io/trivy/latest/docs/configuration/filtering/
+
+# Add your ignored vulnerabilities below:

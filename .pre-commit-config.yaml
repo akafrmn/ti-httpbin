@@ -1,0 +1,30 @@
+# Pre-commit hooks for Kubernetes and Helm projects
+# See https://pre-commit.com for more information
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+        args: ['--unsafe'] # Allow custom YAML tags used in Helm
+      - id: check-added-large-files
+        name: Check for large files
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.20.0
+    hooks:
+      - id: yamlfmt
+        name: Format YAML with yamlfmt
+        command: yamlfmt
+        args: ['-exclude', 'clusters/docker-desktop/flux-system', '.']
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.30
+    hooks:
+      - id: helmlint
+        name: Validate Helm charts
