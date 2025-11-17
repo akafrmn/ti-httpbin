@@ -11,6 +11,7 @@ This repository uses [pre-commit](https://pre-commit.com/) hooks to ensure code 
 - Python 3.x
 - pip (Python package manager)
 - Helm (for chart validation)
+- GITHUB_TOKEN in zsrc
 
 ### Installation
 
